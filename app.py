@@ -2,7 +2,6 @@ from flask import Flask
 from db_connect import db
 from models import *
 import config
-from models import LibraryUser, LibraryBook, LibraryReview, UserRentBook
 
 
 def create_app():
