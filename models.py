@@ -14,7 +14,7 @@ class LibraryUser(db.Model):
 
     __tablename__ = 'libraryUser'
 
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
     user_name = db.Column(db.String(20), nullable=False)
     user_email = db.Column(db.String(255), nullable=False)
     password = db.Column(db.String(255), nullable=False)
@@ -48,14 +48,14 @@ class LibraryBook(db.Model):
 class UserRentBook(db.Model):
     __tablename__ = 'userRentBook'
 
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
     user_email = db.Column(db.String(255), nullable=False)
     book_id = db.Column(db.Integer, db.ForeignKey(
         'libraryBook.id'), nullable=False)
     rental_date = db.Column(db.Date)  # 대여 일자
     return_date = db.Column(db.Date)  # 반납 일자
     book_data = db.relationship(
-        'LibraryBook', foreign_keys='UserRentBook.book_id')  # UserRentBook 테이블과 LibraryBook 연결해주는 변수 (LibraryBook의 속성을 가져와 쓸 수 있도록 해준다)
+        'LibraryBook', foreign_keys='UserRentBook.book_id')  # UserRentBook 테이블과 LibraryBook 연결해주는 변수 (LibraryBook의 속성을 가져와 쓸 수 있도록 해준다. 새로운 컬럼이 추가되는게 아니다. 연결해주는 변수일 뿐!)
 
     def __init__(self, user_email, book_id, rental_date):
         self.user_email = user_email
@@ -67,22 +67,22 @@ class UserRentBook(db.Model):
 class LibraryReview(db.Model):
     __tablename__ = 'libraryReview'
 
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
     user_name = db.Column(db.String(255), nullable=False)
     user_email = db.Column(db.String(255), nullable=False)
     content = db.Column(db.Text(), nullable=False)  # 댓글 내용
     rating = db.Column(db.Integer, nullable=False)  # 평가 별점
+    write_time = db.Column(db.DateTime, default=datetime.utcnow())  # 작성 시간
     book_id = db.Column(db.Integer, db.ForeignKey(
         'libraryBook.id'), nullable=False)
-    write_time = db.Column(db.DateTime, default=datetime.utcnow())  # 작성 시간
 
     def __init__(self, user_name, user_email, content, rating, book_id, write_time):
         self.user_name = user_name
         self.user_email = user_email
         self.content = content
         self.rating = rating
-        self.book_id = book_id
         self.write_time = write_time
+        self.book_id = book_id
 
 
 if __name__ == "__main__":
