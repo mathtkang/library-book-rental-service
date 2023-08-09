@@ -1,8 +1,11 @@
 import csv
 from datetime import date, datetime
 
-from db_connect import db
-from models import LibraryBook
+from app import create_app, db
+from app.models import Book
+
+app = create_app()  # Flask 애플리케이션 객체 생성
+app.app_context().push()  # 애플리케이션 컨텍스트 설정
 
 session = db.session
 
@@ -22,9 +25,9 @@ with open('library.csv', 'r') as f:
         publication_date = datetime.strptime(
             row['publication_date'], '%Y-%m-%d').date()
 
-        libraryBook = LibraryBook(
+        book = Book(
             id=int(row['id']),
-            book_name=row['book_name'],
+            name=row['book_name'],
             publisher=row['publisher'],
             author=row['author'],
             publication_date=publication_date,
@@ -36,5 +39,5 @@ with open('library.csv', 'r') as f:
             rental_val=0,
             remaining=5,
         )
-        db.session.add(libraryBook)
+        db.session.add(book)
     db.session.commit()
