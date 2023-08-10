@@ -18,11 +18,11 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate = Migrate(app, db)  # migration시(flask db init) 이게 없으면 " Error: No such command 'db'. "가 나온다.
     
-    from app.views import book_detail_api, main_api, mypage_api, user_api
+    from app.views import book_detail_api, main, mypage_api, auth
     app.register_blueprint(book_detail_api.bp)
-    app.register_blueprint(main_api.bp)
+    app.register_blueprint(main.bp)
     app.register_blueprint(mypage_api.bp)
-    app.register_blueprint(user_api.bp)
+    app.register_blueprint(auth.bp)
 
     return app
 

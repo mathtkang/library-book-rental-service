@@ -2,7 +2,6 @@ from flask import Flask
 from app import db
 from datetime import datetime
 
-app = Flask(__name__)
 
 class Book(db.Model):
     __tablename__ = 'book'
@@ -53,9 +52,3 @@ class Review(db.Model):
 
     written_user = db.relationship('User', foreign_keys=[written_user_id])  # User 테이블과의 관계 정의
     book = db.relationship('Book', foreign_keys=[book_id])  # Book 테이블과의 관계 정의
-
-
-# # 파일이 직접 실행될 때만 데이터베이스 테이블을 생성하도록 한다. (실제 application에서는 제거)
-# if __name__ == "__main__":
-#     with app.app_context():
-#         db.create_all()
