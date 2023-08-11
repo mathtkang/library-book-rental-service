@@ -24,7 +24,7 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), nullable=False)
-    email = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
 
 class Rent(db.Model):
@@ -32,8 +32,7 @@ class Rent(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     rental_date = db.Column(db.DateTime, default=datetime.utcnow())  # 대여 일자
-    due_date = db.Column(db.DateTime)  # 반납 예정 일자
-    returned = db.Column(db.Boolean, default=False)  # 책이 반납되었는지 여부
+    return_date = db.Column(db.DateTime)  # 반납 일자
     rental_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # FK
     book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)  # FK
 
