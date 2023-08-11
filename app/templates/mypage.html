@@ -18,49 +18,6 @@
 
 {% block content %}
 
-<!-- {% if rental_list %}
-<form method="post" class="row container px-4 px-lg-5" style="margin:0 auto;">
-<h2 style="margin-top:50px;">📚 {{ session['user_name'] }} 님의 도서대여기록입니다.</h2>
-<table class="styled-table" style="text-align: center; font-size: 16px;">
-    <thead>
-        <tr style="text-align: center; ">
-            <th>No.</th>
-            <th>책 제목</th>
-            <th>평  점</th>
-            <th>대여횟수</th>
-            <th>대여일자</th>
-            <th>반납일자</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for book in rental_list %}
-        <tr>
-            <td>{{ book.book_data.id }}</td>
-            <td>{{ book.book_data.book_name }}</td>
-            <td>
-                {% for _ in range(book.book_data.star ) %}
-                    <img width="28" src="../static/img/star_fill.png">
-                {% endfor %}
-                {% for _ in range(5-book.book_data.star ) %}
-                    <img width="28" src="../static/img/star_empty.png">
-                {% endfor %}
-            </td>
-            <td>{{ book.book_data.rental_val }}</td>
-            <td>{{ book.rental_date }}</td>
-
-            {% if book.return_date == None %}
-            <td>아래의 목록에서 반납해주세요😊</td>
-            {% else %}
-            <td>{{ book.return_date }}</td>
-            {% endif %}
-
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-</form>
-{% endif %} -->
-
 {% if rental_list %}
 <form method="post" class="row container px-4 px-lg-5" style="margin:0 auto;">
 <h2 style="margin-top:50px;">📖 {{ session['user_name'] }} 님이 빌리신 책 목록 입니다.</h2>
@@ -76,22 +33,21 @@
         </tr>
     </thead>
     <tbody>
-        {% for book in rental_list %}
+        {% for rental_book in rental_list %}
         <tr>
-            <td>{{ book.rental_date }}</td>
-            <!-- <td>{{ book.book_data.isbn }}</td> -->
-            <td>{{ book.book_data.book_name }}</td>
+            <td>{{ rental_book.rental_date }}</td>
+            <td>{{ rental_book.book.name }}</td>
             <td>
-                {% for _ in range(book.book_data.star ) %}
+                {% for _ in range(rental_book.book.star ) %}
                     <img width="28" src="../static/img/star_fill.png">
                 {% endfor %}
-                {% for _ in range(5-book.book_data.star ) %}
+                {% for _ in range(5-rental_book.book.star ) %}
                     <img width="28" src="../static/img/star_empty.png">
                 {% endfor %}
             </td>
-            <td>{{ book.book_data.rental_val }}</td>
+            <td>{{ rental_book.book.rental_val }}</td>
             <td>
-                <input type="hidden" name="book_id" value="{{ book.id }}">
+                <input type="hidden" name="book_id" value="{{ rental_book.id }}">
                 <input type="submit" value="반납하기" />
             </td>
         </tr>

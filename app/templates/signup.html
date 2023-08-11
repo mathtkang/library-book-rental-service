@@ -12,15 +12,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-  <link rel="stylesheet" href="../static/css/register.css" />
+  <link rel="stylesheet" href="../static/css/signup.css" />
   <link rel=" shortcut icon" href="../static/favicon-library.ico">
   <link rel="icon" href="/static/favicon-library.ico">
-  <title>register</title>
+  <title>signup</title>
 </head>
 <body>
 <div class="container">
-  <form action="{{ url_for('user.register') }}" method="post" id="form" class="form">
-    <h2>Register Developer Library</h2>
+  <form action="{{ url_for('auth.signup') }}" method="post" id="form" class="form">
+    <h2>Signup Developer Library</h2>
 
     <div class="form-control">
       <label for="username">이름</label>
@@ -47,6 +47,6 @@
   </form>
 </div>
 
-<!-- <script src="../static/js/register.js"></script> -->
+<!-- <script src="../static/js/signup.js"></script> -->
 </body>
 </html>

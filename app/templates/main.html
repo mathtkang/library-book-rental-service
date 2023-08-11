@@ -26,12 +26,12 @@
         <form method="post" class="col mb-5">
             <div class="card h-100" style="border: 1px solid #a589f2">
                 <div style="width:262px; height:262px; ">
-                    <img class="card-img-top" src="../{{ book.img_link }}" alt="{{ book.book_name }}" style="display: block; width:70%; border-bottom: 0; margin: 0 auto; "/>
+                    <img class="card-img-top" src="../{{ book.img_link }}" alt="{{ book.name }}" style="display: block; width:70%; border-bottom: 0; margin: 0 auto; "/>
                 </div>
                 <div class="card-body p-4">
                     <div class="text-center">
                         <h5 id="book_name" class="fw-bolder" style="font-size: 18px;">
-                            {{ book.book_name }}
+                            {{ book.name }}
                         </h5>
                         <div style="margin-top:15px;">
                             {% for _ in range(book.star) %}
