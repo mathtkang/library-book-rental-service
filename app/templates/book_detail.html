@@ -11,11 +11,11 @@
 <section class="container px-4 px-lg-5 my-5" style="width:1024px; margin: 0 auto;">
 <div class="row gx-4 gx-lg-5 align-items-center" style="padding-top:30px;">
     <div style="flex: 0 0 auto; width:40%;">
-        <img class="card-img-top mb-5 mb-md-0" src="..{{ book_detail.img_link }}" alt="{{ book_detail.book_name }}" />
+        <img class="card-img-top mb-5 mb-md-0" src="..{{ book_detail.img_link }}" alt="{{ book_detail.name }}" />
     </div>
     <div class="col-md-6">
-        <h1 class="display-5 fw-bolder" style="font-size:32px;">{{ book_detail.book_name }}</h1>
-        <table>
+        <h1 class="display-5 fw-bolder" style="font-size:32px;">{{ book_detail.name }}</h1>
+        <table style="font-size: 20px;">
         <tr>
             <th>출판사</th>
             <td>{{ book_detail.publisher }}</td>
@@ -61,6 +61,10 @@
             </td>
         </tr>
     </table>
+    <!-- 대여하기 버튼 -->
+    <div style="font-size:25px; margin-top:20px;">
+        <input type="submit" value="대여하기" />
+    </div>
     </div>
 </div>
 
@@ -68,25 +72,20 @@
 <div class="row" style="margin:0 auto; padding-top:20px">
     <h2>책 소개</h2>
     <div>
-        <p>{{ book_detail.description }}</p>
+        <p style="font-size: 20px;">{{ book_detail.description }}</p>
     </div>
 </div>
-
-<!-- 대여하기 버튼 -->
-<!-- <div class="">
-    <input type="submit" value="대여하기" />
-</div> -->
 
 <hr>
 <!-- 댓글 작성하기 : 로그인된 유저만 -->
 {% if session['user_email'] %}
 <div class="row" style="margin:0 auto; padding-top:20px">
-    <h2 style="font-size: 30px;">댓글</h2>
+    <h2>댓글</h2>
     <form method="post" class="" style="display:flex; margin-top:10px;">
-        <div style="display:flex;">
-            <textarea name="review" placeholder="댓글을 작성하세요" rows="2" cols="95%"></textarea>
+        <div style="display:flex; font-size: 20px;">
+            <textarea name="review" placeholder="댓글을 작성하세요" rows="2" cols="70%"></textarea>
         </div>
-        <div style="display:flex; margin-left:10px;">
+        <div style="display:flex; font-size: 20px; margin-left:10px;">
             <select name="rating">
                 <option value="1">1점</option>
                 <option value="2">2점</option>
@@ -94,23 +93,25 @@
                 <option value="4">4점</option>
                 <option value="5">5점</option>
             </select>
-            <input type="submit" value="확인" style="margin-left:5px;">
+            <input type="submit" value="확인" style="margin-left:5px; font-size: 20px;">
         </div>
     </form>
 </div>
-
 {% endif %}
+
 <!-- 지금까지 작성된 댓글 보여주기 -->
 <div class="row" style="margin:0 auto; padding-top:20px">
     {% for review in review_list %}
     <!-- book_detial_api -->
     <div class="all_review">
-        <div>
-            <span>{{ review.written_user_id.name }}</span>
+        <div style="font-size: 20px;">
+            <span>{{ review.written_user.name }}</span>
             <span class="bar">|</span>
-            <span>{{ review.written_user_id.email }}</span>
+            <span>{{ review.written_user.email }}</span>
             <span class="bar">|</span>
-            <span>{{ review.write_time }}</span>
+            <span>{{ review.created_at }}</span>
+            <span class="bar">|</span>
+            <span>{{ review.updated_at }}</span>
             <span class="bar">|</span>
             <span>
             {% for _ in range(review.rating) %}
@@ -120,16 +121,20 @@
                 <img width="16" src="../static/img/star_empty.png">
             {% endfor %}
             </span>
-            
             <!-- 수정하기 삭제하기 버튼 : 작성한 유저만 사용 가능 -->
-            <!-- {% if session['user_email'] == review.user_email %}
-            <span style="float: right;">
+            {% if session['user_email'] == review.written_user.email %}
+                <!-- 수정하기 버튼 클릭하면, 아래와 같이 나오도록  -->
+            <form method="post" action="{{ url_for('book_info.review_edit', book_id=book_detail.id, review_id=review.id) }}">
+                <textarea name="updated_review" placeholder="{{ review.content }}"></textarea>
+                <button type="submit">수정 완료</button>
+            </form>
+            <!-- <span style="float: right;">
                 <input type="button" value="수정하기" style="margin-left:5px;">
                 <input type="button" value="삭제하기" style="margin-left:5px;">
-            </span>
-            {% endif %} -->
+            </span> -->
+            {% endif %}
         </div>
-        <div class="review_content" style="font-size:16px; margin-top:5px;">
+        <div class="review_content" style="font-size:20px; margin-top:5px;">
             {{ review.content }}
         </div>
         <hr>
