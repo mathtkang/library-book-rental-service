@@ -1,6 +1,7 @@
 from flask import Flask
 from app import db
 from datetime import datetime
+from sqlalchemy import CheckConstraint
 
 
 class Book(db.Model):
@@ -18,6 +19,11 @@ class Book(db.Model):
     img_link = db.Column(db.String(255))  # 이미지
     rental_val = db.Column(db.Integer)  # 총 대여 횟수
     remaining = db.Column(db.Integer)  # 재고
+
+    # CHECK 제약 조건 추가
+    __table_args__ = (
+        CheckConstraint('remaining >= 0', name='positive_remaining'),
+    )
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -45,7 +51,8 @@ class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text(), nullable=False)  # 댓글 내용
     rating = db.Column(db.Integer, nullable=False)  # 평가 별점
-    write_time = db.Column(db.DateTime, default=datetime.utcnow())  # 작성 시간
+    created_at = db.Column(db.DateTime, default=datetime.utcnow())  # 작성 시간
+    updated_at = db.Column(db.DateTime)  # 수정 시간
     written_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # FK
     book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)  # FK
 
