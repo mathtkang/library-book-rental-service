@@ -13,6 +13,7 @@ def create_app(config_class=Config):
 
     app.config['SQLALCHEMY_DATABASE_URI'] = Config.SQLALCHEMY_DATABASE_URI
     app.secret_key = Config.SECRET_KEY
+    app.config['PERMANENT_SESSION_LIFETIME'] = Config.PERMANENT_SESSION_LIFETIME
     app.config['SESSION_TYPE'] = 'filesystem'  # session을 어떻게 저장할 것인지? (여기서는) 파일 시스템에 저장하겠다는 의미
 
     db.init_app(app)
