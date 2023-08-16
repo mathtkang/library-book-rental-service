@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import redirect, request, render_template, flash
+from flask import redirect, request, render_template, flash, jsonify
 from flask import Blueprint, session
 from flask.views import MethodView
 
@@ -9,13 +9,12 @@ from app.models import User, Book, Rent, Review
 
 bp = Blueprint('book_info', __name__, url_prefix='/')
 
-# @bp.route('/bookDetail/<int:book_id>', methods=['GET', 'POST'])
 class BookDetailView(MethodView):
     def get(self, book_id):
         '''
         Redirect page: book_detail.html
-        책 상세 페이지 반환
-        TODO: book_detail.html 페이지에 대여하기 버튼 구현
+        ✅ 책 상세 페이지 반환
+        - TODO: book_detail.html 페이지에 대여하기 버튼 구현
         '''
         book_object = Book.query.filter(Book.id == book_id).first()
 
@@ -26,19 +25,19 @@ class BookDetailView(MethodView):
         # 지금까지 작성된 댓글을 최신순(DESC)으로 가져온다
         review_list = Review.query.filter(
             Review.book_id == book_id
-        ).order_by(Review.write_time.desc()).all()
+        ).order_by(Review.created_at.desc()).all()
 
         return render_template('book_detail.html', book_detail=book_object, review_list=review_list)
 
     def post(self, book_id):
         '''
-        댓글 작성 기능
-        Redirect page: main.html의 '자세히보기'로 넘어옴
+        ✅ Redirect page: main.html의 '자세히보기'로 넘어옴
+        ✅ 댓글 작성 기능
         '''
         content = request.form['review']
         rating = int(request.form['rating'])
         now = datetime.now()
-        write_time = now.strftime('%Y-%m-%d %H:%M:%S')
+        created_at = now.strftime('%Y-%m-%d %H:%M:%S')
 
         # 댓글 내용과 별점이 없는 경우
         if not content:
@@ -54,7 +53,7 @@ class BookDetailView(MethodView):
         review_object = Review(
             content=content,
             rating=rating,
-            write_time=write_time,
+            created_at=created_at,
             written_user_id=user_object.id,
             book_id=book_id,
         )
@@ -76,42 +75,52 @@ class BookDetailView(MethodView):
         return redirect(f'/bookDetail/{book_id}')
 
 
-# @bp.route('/bookDetail/<int:book_id>/<int:review_id>', methods=['PUT', 'DELETE'])
-# class ReviewEditView(MethodView):
-#     def put(self, book_id, comment_id):
-#         '''
-#         TODO: 댓글 수정 기능
-#         '''
-#         new_content = request.form['review']
-#         review = Review.query.get(comment_id)
+class ReviewEditView(MethodView):
+    def post(self, book_id, review_id):
+        '''
+        ✅ 댓글 수정 기능
+        '''
+        updated_content = request.form['updated_review']
+        written_review_object = Review.query.filter(Review.id == review_id).first()
 
-#         if review is None:
-#             flash('해당 댓글을 찾을 수 없습니다.')
-#         elif review.user_email != session['user_email']:
-#             flash('본인의 댓글만 수정할 수 있습니다.')
-#         else:
-#             review.content = new_content
-#             db.session.commit()
+        if written_review_object is None:
+            flash('해당 댓글을 찾을 수 없습니다.')
+        elif written_review_object.written_user.email != session['user_email']:
+            flash('본인의 댓글만 수정할 수 있습니다.')
+        else:
+            written_review_object.content = updated_content
+            written_review_object.updated_at = datetime.utcnow()  # 현재 시간으로 업데이트
+            db.session.commit()
         
-#         return redirect(f'/bookDetail/{book_id}')
+        return redirect(f'/bookDetail/{book_id}')
 
-#     def delete(self, book_id, comment_id):
+    def delete(self, book_id, review_id):
+        '''
+        ✅ 댓글 삭제 기능
+        '''
+        review = Review.query.get(review_id)
 
-#         '''
-#         TODO: 댓글 삭제 기능
-#         '''
-#         review = Review.query.get(comment_id)
+        if review is None:
+            flash('해당 댓글을 찾을 수 없습니다.')
+            return jsonify({
+                'success': False, 
+                'message': '해당 댓글을 찾을 수 없습니다.'
+            })
+        elif review.written_user.email != session['user_email']:
+            flash('본인의 댓글만 삭제할 수 있습니다.')
+            return jsonify({
+                'success': False, 
+                'message': '본인의 댓글만 삭제할 수 있습니다.'
+            })
+        else:
+            db.session.delete(review)
+            db.session.commit()
+            
+        return jsonify({
+            'success': True, 
+            'message': '댓글이 삭제되었습니다.'
+        })
 
-#         if review is None:
-#             flash('해당 댓글을 찾을 수 없습니다.')
-#         elif review.user_email != session['user_email']:
-#             flash('본인의 댓글만 삭제할 수 있습니다.')
-#         else:
-#             db.session.delete(review)
-#             db.session.commit()
-        
-#         return redirect(f'/bookDetail/{book_id}')
 
-
-book_detail_view = BookDetailView.as_view('book_info')
-bp.add_url_rule('/bookDetail/<int:book_id>', view_func=book_detail_view, methods=['GET', 'POST'])
+bp.add_url_rule('/bookDetail/<int:book_id>', view_func=BookDetailView.as_view('book_info'), methods=['GET', 'POST'])
+bp.add_url_rule('/bookDetail/<int:book_id>/<int:review_id>', view_func=ReviewEditView.as_view('review_edit'), methods=['POST', 'DELETE'])
