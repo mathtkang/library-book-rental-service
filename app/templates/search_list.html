@@ -20,40 +20,42 @@
 {% block content %}
 
 {% if search_results %}
-
-{% for book in search_results %}
-<form method="post" class="col mb-5">
-    <div class="card h-100" style="border: 1px solid #a589f2">
-        <div style="width:262px; height:262px; ">
-            <img class="card-img-top" src="../{{ book.img_link }}" alt="{{ book.name }}" style="display: block; width:70%; border-bottom: 0; margin: 0 auto; "/>
-        </div>
-        <div class="card-body p-4">
-            <div class="text-center">
-                <h5 id="book_name" class="fw-bolder" style="font-size: 18px;">
-                    {{ book.name }}
-                </h5>
-                <div style="margin-top:15px;">
-                    {% for _ in range(book.star) %}
-                        <img width="28" src="../static/img/star_fill.png">
-                    {% endfor %}
-                    {% for _ in range(5 - book.star) %}
-                        <img width="28" src="../static/img/star_empty.png">
-                    {% endfor %}
+<div method="post" action="{{ url_for('main.book_list') }}" class="container px-4 px-lg-5 mt-5">
+    <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+        {% for book in search_results %}
+        <form method="post" action="{{ url_for('main.book_list') }}" class="col mb-5">
+            <div class="card h-100" style="border: 1px solid #a589f2">
+                <div style="width:262px; height:262px; ">
+                    <img class="card-img-top" src="../{{ book.img_link }}" alt="{{ book.name }}" style="display: block; width:70%; border-bottom: 0; margin: 0 auto; "/>
                 </div>
-                <div style="padding-top:10px;">
-                    {{ book.remaining }}권 남아있습니다.
+                <div class="card-body p-4">
+                    <div class="text-center">
+                        <h5 id="book_name" class="fw-bolder" style="font-size: 18px;">
+                            {{ book.name }}
+                        </h5>
+                        <div style="margin-top:15px;">
+                            {% for _ in range(book.star) %}
+                                <img width="28" src="../static/img/star_fill.png">
+                            {% endfor %}
+                            {% for _ in range(5 - book.star) %}
+                                <img width="28" src="../static/img/star_empty.png">
+                            {% endfor %}
+                        </div>
+                        <div style="padding-top:10px;">
+                            {{ book.remaining }}권 남아있습니다.
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" style="margin:0 auto;">
+                    <input type="hidden" name="book_id" value="{{ book.id }}">
+                    <button class="text-center btn btn-outline-dark mt-auto">대여하기</button>
+                    <span class="text-center"><a class="btn btn-outline-dark mt-auto" href="/bookDetail/{{ book.id }}">자세히보기</a></span>
                 </div>
             </div>
-        </div>
-        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" style="margin:0 auto;">
-            <input type="hidden" name="book_id" value="{{ book.id }}">
-            <button class="text-center btn btn-outline-dark mt-auto">대여하기</button>
-            <span class="text-center"><a class="btn btn-outline-dark mt-auto" href="/bookDetail/{{ book.id }}">자세히보기</a></span>
-        </div>
+        </form>
+        {% endfor %}
     </div>
-</form>
-{% endfor %}
-
+</div>
 
 {% else %}
 <div>search_results가 없습니다</div>

@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import redirect, request, render_template, flash, url_for
+from flask import redirect, request, render_template, flash, url_for, jsonify
 from flask import Blueprint, session
 from flask.views import MethodView
 
@@ -9,7 +9,6 @@ from app import db
 bp = Blueprint('main', __name__, url_prefix='/')
 
 
-# @bp.route('/', methods=['GET', 'POST'])
 class BookListView(MethodView):
     def get(self):
         '''
@@ -34,8 +33,7 @@ class BookListView(MethodView):
 
         if not book_id:
             flash('book_id는 필수 파라미터 입니다.')
-            # return redirect(url_for('main.book_list'))
-            return render_template("main.html", book_list=book_list)
+            return redirect(url_for('main.book_list'))
         
         try:
             book_id = int(book_id)
@@ -45,37 +43,32 @@ class BookListView(MethodView):
         
         book_object = Book.query.filter(Book.id == book_id).first()
         user_object = User.query.filter(User.email == session.get('user_email')).first()
-        print(user_object)
 
         if not book_object:
             flash('대출하려는 책을 찾을 수 없습니다.')
-            # return redirect(url_for('main.book_list'))
-            return render_template('main.html', book_list=book_list)
+            return redirect(url_for('main.book_list'))
         
         # 책의 재고가 0인 경우
         if book_object.remaining == 0:
             flash('재고가 없어서 대여할 수 없습니다. 다른 책을 대여해주세요.')
         
         # 이미 대여한 책인 경우
-        rental_info_list = Rent.query.filter(
-            (Rent.return_date == None) 
-            & (Rent.rental_user_id == user_object.id)
-        ).all()
+        rental_info = Rent.query.filter(
+            (Rent.rental_user == user_object)
+            & (Rent.rental_date != None) 
+            & (Rent.book_id == book_id)
+        ).first()
         
-        for book in rental_info_list:
-            if book.id == book_id:
-                flash('이미 대여한 책입니다. 마이페이지에서 확인해주세요.')
-                return redirect('/mypage')
-                # return render_template('mypage.html', rental_list=rental_list)
+        if rental_info:
+            flash('이미 대여한 책입니다. 마이페이지에서 확인해주세요.')
+            return redirect('/mypage')
         
         book_object.remaining -= 1  # 재고(대여 가능으로 표시되는 수): -1
         book_object.rental_val += 1  # 총 대여 횟수: +1
 
         now = datetime.now()
         rental_date = now.strftime('%Y-%m-%d %H:%M:%S')
-        # rental_date = datetime.now()
 
-        
         rent_object = Rent(
             rental_date=rental_date,
             rental_user=user_object,
@@ -87,9 +80,24 @@ class BookListView(MethodView):
 
         flash(f'{book_object.name}을 대여했습니다.')
 
-        # return redirect(url_for('main.book_list'))
         return render_template("main.html", book_list=book_list)
 
 
-book_list_view = BookListView.as_view('book_list')
-bp.add_url_rule('/', view_func=book_list_view, methods=['GET', 'POST'])
+class SearchBookView(MethodView):
+    def get(self):
+        search_query = request.args.get('search_book_name')
+        print(search_query)
+
+        search_results = []
+
+        if search_query:
+            search_query = search_query.lower()  # 소문자 변환
+            search_results = Book.query.filter(Book.name.ilike(f'%{search_query}%')).all()
+        
+        print(search_results)
+
+        return render_template("search_list.html", search_results=search_results)
+
+
+bp.add_url_rule('/main', view_func=BookListView.as_view('book_list'), methods=['GET', 'POST'])
+bp.add_url_rule('/search', view_func=SearchBookView.as_view('search_book'), methods=['GET'])

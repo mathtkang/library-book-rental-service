@@ -20,10 +20,10 @@
 {% block content %}
 
 {% if book_list %}
-<div method="post" class="container px-4 px-lg-5 mt-5">
+<div method="post" action="{{ url_for('main.book_list') }}" class="container px-4 px-lg-5 mt-5">
     <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
         {% for book in book_list %}
-        <form method="post" class="col mb-5">
+        <form method="post" action="{{ url_for('main.book_list') }}" class="col mb-5">
             <div class="card h-100" style="border: 1px solid #a589f2">
                 <div style="width:262px; height:262px; ">
                     <img class="card-img-top" src="../{{ book.img_link }}" alt="{{ book.name }}" style="display: block; width:70%; border-bottom: 0; margin: 0 auto; "/>

@@ -3,7 +3,7 @@
 <div class="row justify-content-center">
     <div class="col-xl-6">
         <div class="text-center text-white">
-            <form class="form-subscribe" id="contactForm" method="post" action="{{ url_for('main.search_book') }}"></form>
+            <form class="form-subscribe" id="contactForm" method="get" action="{{ url_for('main.search_book') }}">
                 <div class="row" style="margin-top:80px;">
                     <div class="col">
                         <input class="form-control form-control-lg" name="search_book_name" placeholder="찾으시는 도서를 입력해주세요.">
