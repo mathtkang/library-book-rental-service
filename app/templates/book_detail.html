@@ -60,11 +60,7 @@
             {% endif %}
             </td>
         </tr>
-    </table>
-    <!-- 대여하기 버튼 -->
-    <div style="font-size:25px; margin-top:20px;">
-        <input type="submit" value="대여하기" />
-    </div>
+        </table>
     </div>
 </div>
 
@@ -75,6 +71,13 @@
         <p style="font-size: 20px;">{{ book_detail.description }}</p>
     </div>
 </div>
+<!-- 대여하기 버튼 -->
+<!-- <div style="margin-top:20px;">
+    <form method="post" class="col mb-5">
+        <input type="hidden" name="book_id" value="{{ book_detail.id }}">
+        <button class="text-center btn btn-outline-dark mt-auto" style="font-size:20px;">대여하기</button>
+    </form>
+</div> -->
 
 <hr>
 <!-- 댓글 작성하기 : 로그인된 유저만 -->
@@ -103,15 +106,19 @@
 <div class="row" style="margin:0 auto; padding-top:20px">
     {% for review in review_list %}
     <!-- book_detial_api -->
-    <div class="all_review">
+    <div class="all_review" id="review-{{ review.id }}">
         <div style="font-size: 20px;">
             <span>{{ review.written_user.name }}</span>
             <span class="bar">|</span>
             <span>{{ review.written_user.email }}</span>
             <span class="bar">|</span>
-            <span>{{ review.created_at }}</span>
-            <span class="bar">|</span>
-            <span>{{ review.updated_at }}</span>
+            <span>
+                {% if review.updated_at %}
+                    {{ review.updated_at }}
+                {% else %}
+                    {{ review.created_at }}
+                {% endif %}
+            </span>
             <span class="bar">|</span>
             <span>
             {% for _ in range(review.rating) %}
@@ -123,19 +130,23 @@
             </span>
             <!-- 수정하기 삭제하기 버튼 : 작성한 유저만 사용 가능 -->
             {% if session['user_email'] == review.written_user.email %}
-                <!-- 수정하기 버튼 클릭하면, 아래와 같이 나오도록  -->
-            <form method="post" action="{{ url_for('book_info.review_edit', book_id=book_detail.id, review_id=review.id) }}">
-                <textarea name="updated_review" placeholder="{{ review.content }}"></textarea>
-                <button type="submit">수정 완료</button>
-            </form>
-            <!-- <span style="float: right;">
-                <input type="button" value="수정하기" style="margin-left:5px;">
-                <input type="button" value="삭제하기" style="margin-left:5px;">
-            </span> -->
+            <div class="review_content-wrapper" style="float: right;">
+                <button class="edit-btn" data-review-id="{{ review.id }}" style="margin-left:5px;">수정하기</button>
+                <button class="delete-btn" data-review-id="{{ review.id }}" style="margin-left:5px;">삭제하기</button>
+            </div>
             {% endif %}
         </div>
         <div class="review_content" style="font-size:20px; margin-top:5px;">
             {{ review.content }}
+        </div>
+        <!-- (수정 폼 템플릿) 수정하기 버튼 클릭하면, 아래와 같이 나오도록 -->
+        <div class="edit-form" style="display: none;">
+            <form method="post" action="{{ url_for('book_info.review_edit', book_id=book_detail.id, review_id=review.id) }}">
+                <div style="display:flex; font-size: 20px;">
+                <textarea name="updated_review" rows="5" cols="100" placeholder="수정할 내용을 입력해주세요"></textarea><br>
+                <button type="submit" class="button" style="margin-left:10px; font-size: 20px;">수정 완료</button>
+                </div>
+            </form>
         </div>
         <hr>
     </div>
@@ -143,6 +154,52 @@
 </div>
 
 
+<script>
+    const editButtons = document.querySelectorAll('.edit-btn');
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    const reviewContentWrappers = document.querySelectorAll('.review_content-wrapper');
+    const editForms = document.querySelectorAll('.edit-form');
+
+    editButtons.forEach((button, index) => {
+        button.addEventListener('click', () => {
+            const reviewId = button.getAttribute('data-review-id');  // 해당 수정 버튼의 리뷰 ID 가져오기
+            const reviewContentWrapper = document.querySelector(`#review-${reviewId} .review_content-wrapper`);
+            // const reviewContentWrapper2 = document.querySelector('.review_content-wrapper2');
+            const editForm = document.querySelector(`#review-${reviewId} .edit-form`);
+
+            reviewContentWrapper.style.display = 'none';
+            // reviewContentWrapper2.style.display = 'none';
+            editForm.style.display = 'block';
+            
+            const reviewContent = reviewContentWrapper.querySelector('.review_content').textContent;
+
+            editForm.querySelector('textarea').value = reviewContent;
+        });
+    });
+
+    deleteButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            const reviewId = button.getAttribute('data-review-id');
+            // 서버로 reviewId 전달하여 삭제 처리
+            fetch(`/bookDetail/{{ book_detail.id }}/${reviewId}`, {
+                method: 'DELETE',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 삭제 후 리로드
+                    window.location.reload();
+                } else {
+                    // 실패 시 메시지 출력 또는 처리
+                    console.log('삭제 실패');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+</script>
 
 </section>
 
