@@ -25,8 +25,8 @@ class BookListView(MethodView):
         '''
         user_object = User.query.filter(User.email == session.get('user_email')).first()
         if user_object is None:
-            flash('로그인 후 이용해주세요.')
-            return render_template("signup.html")
+            flash('로그인 또는 회원가입 이후 이용해주세요.')
+            return redirect(url_for('auth.login'))
         
         book_list = Book.query.all()
         book_id = request.form.get('book_id')
@@ -86,15 +86,12 @@ class BookListView(MethodView):
 class SearchBookView(MethodView):
     def get(self):
         search_query = request.args.get('search_book_name')
-        print(search_query)
 
         search_results = []
 
         if search_query:
             search_query = search_query.lower()  # 소문자 변환
             search_results = Book.query.filter(Book.name.ilike(f'%{search_query}%')).all()
-        
-        print(search_results)
 
         return render_template("search_list.html", search_results=search_results)
 

@@ -131,7 +131,7 @@ class LoginView(MethodView):
             session.modified = True  # 세션 변경사항을 Flask에 알려줌
 
         flash("로그인 되었습니다!")
-        return redirect("/")
+        return redirect("/main")
 
 
 class LogoutView(MethodView):
@@ -141,7 +141,7 @@ class LogoutView(MethodView):
         '''
         session.clear()  # 세션의 모든 데이터 삭제
         flash("로그아웃 되었습니다.")
-        return redirect("/")
+        return redirect("/main")
     
 
 bp.add_url_rule('/signup', view_func=SignupView.as_view('signup'), methods=['GET', 'POST'])
