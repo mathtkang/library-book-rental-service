@@ -115,16 +115,23 @@ class LoginView(MethodView):
             return redirect("/signup")
         
         # 비밀번호 검증
-        if bcrypt.check_password_hash(user_object.password, password):
-            session.clear()
-            session['user_name'] = user_object.name
-            session['user_email'] = user_object.email
-
-            flash("로그인 되었습니다!")
-            return redirect("/")
-        else:
+        if not bcrypt.check_password_hash(user_object.password, password):
             flash("비밀번호를 다시 확인해주세요.")
             return render_template('login.html')
+
+        session.clear()
+        session['user_email'] = user_object.email
+        session['user_name'] = user_object.name
+
+        # 자동로그인 체크박스 확인
+        if request.form.get('check2') == '2':
+            session.permanent = True  # 세션의 활성화: 브라우저를 닫아도 세션이 지속되기 때문에 로그인 상태 유지 가능 (PERMANENT_SESSION_LIFETIME에 의존함)
+        else:
+            session.permanent = False  # PERMANENT_SESSION_LIFETIME 와는 무관하게 동작: 브라우저 닫으면 자동으로 세션 삭제
+            session.modified = True  # 세션 변경사항을 Flask에 알려줌
+
+        flash("로그인 되었습니다!")
+        return redirect("/")
 
 
 class LogoutView(MethodView):
@@ -132,17 +139,11 @@ class LogoutView(MethodView):
         '''
         세션에서 사용자 정보 지워줌
         '''
-        session.clear()
+        session.clear()  # 세션의 모든 데이터 삭제
         flash("로그아웃 되었습니다.")
         return redirect("/")
     
 
-
-signup_view = SignupView.as_view('signup')
-bp.add_url_rule('/signup', view_func=signup_view, methods=['GET', 'POST'])
-
-login_view = LoginView.as_view('login')
-bp.add_url_rule('/login', view_func=login_view, methods=['GET', 'POST'])
-
-logout_view = LogoutView.as_view('logout')
-bp.add_url_rule('/logout', view_func=logout_view, methods=['GET'])
+bp.add_url_rule('/signup', view_func=SignupView.as_view('signup'), methods=['GET', 'POST'])
+bp.add_url_rule('/login', view_func=LoginView.as_view('login'), methods=['GET', 'POST'])
+bp.add_url_rule('/logout', view_func=LogoutView.as_view('logout'), methods=['GET'])
