@@ -76,7 +76,7 @@ class SignupView(MethodView):
 
         flash("회원가입이 완료되었습니다. 로그인해주세요!😊")
 
-        return redirect("/login")
+        return render_template('login.html')
 
 
 class LoginView(MethodView):

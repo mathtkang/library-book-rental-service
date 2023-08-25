@@ -68,19 +68,17 @@ function checkPasswordsMatch(input1, input2) {
 
 // Get fieldname
 function getFieldName(input) {
-  return input.id.charAt(0).toUpperCase() + input.id.slice(1);
+  return input.id.replace('_', ' ').replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
 }
 
 // Event listeners
 form.addEventListener('submit', function(e) {
-  // e.preventDefault();
+  e.preventDefault();
 
-  if(!checkRequired([username, email, password, password2])){
+  if (!checkRequired([username, email, password, password2])) {
     checkLength(username, 3, 20);
     checkLength(password, 8, 16);
     checkEmail(email);
     checkPasswordsMatch(password, password2);
   }
-  return 
-  
 });
