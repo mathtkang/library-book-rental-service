@@ -1,0 +1,22 @@
+version: '3'
+services:
+  web:
+    image: python:3.8
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: gunicorn --workers 4 main:app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+
+
+
+
