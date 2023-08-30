@@ -32,6 +32,12 @@ class SignupView(MethodView):
             flash('모든 필드(이름, 이메일, 비밀번호)를 입력해주세요.')
             return render_template('signup.html')
 
+        # 이름 중복 확인
+        existing_user = User.query.filter(User.name == name).first()
+        if existing_user:
+            flash("이미 존재하는 이름입니다.")
+            return render_template('signup.html')
+        
         try:
             validate_email(email)
         except EmailNotValidError:
@@ -63,7 +69,7 @@ class SignupView(MethodView):
 
 
         # 비밀번호 암호화
-        hashed_password = bcrypt.generate_password_hash(password)
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
         # db에 유저 생성
         user_object = User(
@@ -71,12 +77,15 @@ class SignupView(MethodView):
             email=email,
             password=hashed_password
         )
+        
         db.session.add(user_object)
         db.session.commit()
 
+        # return {"message": "User created successfully"}, 201
+
         flash("회원가입이 완료되었습니다. 로그인해주세요!😊")
 
-        return render_template('login.html')
+        return redirect("/login")
 
 
 class LoginView(MethodView):
@@ -109,13 +118,18 @@ class LoginView(MethodView):
             flash('비밀번호를 입력해주세요.')
             return render_template('login.html')
 
-        user_object = User.query.filter(email==email).first()
+        user_object = User.query.filter(User.email == email).first()
+
         if user_object is None:
             flash("해당 이메일이 없습니다. 회원가입해주세요.")
-            return redirect("/signup")
+            return render_template('signup.html')
+
+        password = password.encode('utf-8')
+        user_object.password = user_object.password.encode('utf-8')
         
         # 비밀번호 검증
         if not bcrypt.check_password_hash(user_object.password, password):
+            print("here")
             flash("비밀번호를 다시 확인해주세요.")
             return render_template('login.html')
 
@@ -130,7 +144,7 @@ class LoginView(MethodView):
             session.permanent = False  # PERMANENT_SESSION_LIFETIME 와는 무관하게 동작: 브라우저 닫으면 자동으로 세션 삭제
             session.modified = True  # 세션 변경사항을 Flask에 알려줌
 
-        flash("로그인 되었습니다!")
+        flash("로그인 되었습니다!😊")
         return redirect("/main")
 
 
