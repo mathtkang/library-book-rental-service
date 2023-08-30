@@ -17,7 +17,6 @@ class Book(db.Model):
     description = db.Column(db.Text)  # 책 소개
     star = db.Column(db.Integer)  # 별점
     img_link = db.Column(db.String(255))  # 이미지
-    rental_val = db.Column(db.Integer)  # 총 대여 횟수
     remaining = db.Column(db.Integer)  # 재고
 
     # CHECK 제약 조건 추가
@@ -39,6 +38,7 @@ class Rent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     rental_date = db.Column(db.DateTime, default=datetime.utcnow())  # 대여 일자
     return_date = db.Column(db.DateTime)  # 반납 일자
+    rental_num = db.Column(db.Integer, default=1)  # 총 대여 횟수
     rental_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # FK
     book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)  # FK
 
