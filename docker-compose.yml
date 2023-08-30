@@ -1,22 +1,30 @@
 version: '3'
 services:
   web:
-    image: python:3.8
-    working_dir: /app
-    volumes:
-      - .:/app
-    command: gunicorn --workers 4 main:app
+    # image: python:3.8
+    # working_dir: /app
+    # volumes:
+    #   - .:/app
+    # command: gunicorn --workers 4 main:app
+    # ports:
+    #   - "8088:8088"
+    build: .
+    command: poetry run gunicorn --workers 4 --bind 0.0.0.0:8088 main:app
     ports:
-      - "8000:8000"
+      - "8088:8088"
     depends_on:
       - db
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
   db:
-    image: postgres:13
+    image: mysql:latest
     environment:
-      POSTGRES_DB: mydb
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-
-
-
-
+      MYSQL_DATABASE: library
+      MYSQL_USER: flask
+      MYSQL_PASSWORD: devpassword
+    ports:
+      - "3307:3306"
