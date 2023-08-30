@@ -4,7 +4,7 @@ import os
 BASE_DIR = os.path.dirname(__file__)
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY')
+    SECRET_KEY = "my-secret-key"
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://flask:devpassword@localhost:3306/library'
     # {데이터베이스에 접속할 드라이버}://{사용자이름}:{사용자비밀번호}@{DB호스트주소}:{portnumber}/{연결할DB이름}
     SQLALCHEMY_TRACK_MODIFICATIONS = False
