@@ -36,7 +36,6 @@ with open('library.csv', 'r') as f:
             description=row['description'],
             star=0,
             img_link=img_link,
-            rental_val=0,
             remaining=5,
         )
         db.session.add(book)

@@ -64,7 +64,6 @@ class BookListView(MethodView):
             return redirect('/mypage')
         
         book_object.remaining -= 1  # 재고(대여 가능으로 표시되는 수): -1
-        book_object.rental_val += 1  # 총 대여 횟수: +1
 
         now = datetime.now()
         rental_date = now.strftime('%Y-%m-%d %H:%M:%S')
@@ -73,7 +72,9 @@ class BookListView(MethodView):
             rental_date=rental_date,
             rental_user=user_object,
             book_id=book_id,
+            rental_num=0,
         )
+        rent_object.rental_num += 1  # 총 대여 횟수: +1
 
         db.session.add(rent_object)
         db.session.commit()

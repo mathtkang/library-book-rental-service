@@ -25,17 +25,18 @@
     <thead>
         <tr style="text-align: center; ">
             <th>대여일자</th>
-            <!-- <th>ISBN 코드</th> -->
+            <th>반납일자</th>
             <th>책 제목</th>
             <th>평  점</th>
             <th>대여횟수</th>
-            <th>반납하기</th>
+            <th>반납여부</th>
         </tr>
     </thead>
     <tbody>
         {% for rental_book in rental_list %}
         <tr>
             <td>{{ rental_book.rental_date }}</td>
+            <td>{{ rental_book.return_date }}</td>
             <td>{{ rental_book.book.name }}</td>
             <td>
                 {% for _ in range(rental_book.book.star ) %}
@@ -45,11 +46,15 @@
                     <img width="28" src="../static/img/star_empty.png">
                 {% endfor %}
             </td>
-            <td>{{ rental_book.book.rental_val }}</td>
+            <td>{{ rental_book.rental_num }}</td>
+            {% if rental_book.return_date == None %}
             <td>
                 <input type="hidden" name="book_id" value="{{ rental_book.id }}">
                 <input type="submit" value="반납하기" />
             </td>
+            {% else %}
+            <td>반납 완료</td>
+            {% endif %}
         </tr>
         {% endfor %}
     </tbody>

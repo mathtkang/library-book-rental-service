@@ -29,7 +29,7 @@ def upgrade():
     sa.Column('description', sa.Text(), nullable=True),
     sa.Column('star', sa.Integer(), nullable=True),
     sa.Column('img_link', sa.String(length=255), nullable=True),
-    sa.Column('rental_val', sa.Integer(), nullable=True),
+    sa.Column('rental_num', sa.Integer(), nullable=True),
     sa.Column('remaining', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
