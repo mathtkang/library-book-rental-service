@@ -21,13 +21,19 @@ class BookDetailView(MethodView):
         if book_object is None:
             flash('해당 id에 대한 책을 찾을 수 없습니다.')
             return redirect('/')
-
         # 지금까지 작성된 댓글을 최신순(DESC)으로 가져온다
         review_list = Review.query.filter(
             Review.book_id == book_id
         ).order_by(Review.created_at.desc()).all()
+            
+        user_email = session.get('user_email')
+        if user_email:
+            user_object = User.query.filter(User.email == user_email).first()
+            rent_object = Rent.query.filter(Rent.rental_user_id == user_object.id).first()
+            return render_template('book_detail.html', book_detail=book_object, rent_object=rent_object, review_list=review_list)
+        else:
+            return render_template('book_detail.html', book_detail=book_object, review_list=review_list)
 
-        return render_template('book_detail.html', book_detail=book_object, review_list=review_list)
 
     def post(self, book_id):
         '''
@@ -115,7 +121,9 @@ class ReviewEditView(MethodView):
         else:
             db.session.delete(review)
             db.session.commit()
-            
+        
+        flash('댓글이 삭제되었습니다.')
+
         return jsonify({
             'success': True, 
             'message': '댓글이 삭제되었습니다.'
