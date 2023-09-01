@@ -1,3 +1,11 @@
+{% with messages = get_flashed_messages() %}
+{% if messages %} 
+<script> 
+    alert("{{messages[0]}}") 
+</script> 
+{% endif %} 
+{% endwith %}
+
 {% extends "_base.html" %}
 
 {% block title %}책 소개 페이지{% endblock %}
@@ -52,10 +60,20 @@
             {% if book_detail.remaining == 0 %}
                 <td style="color: red;">재고 없음</td>
             {% else %}
-                <td>{{book_detail.remaining}} 권 남음</td>
+                <td>{{ book_detail.remaining }} 권 남음</td>
             {% endif %}
             </td>
         </tr>
+        <!-- {% if session['user_email'] %}
+        <tr>
+            <th>대여횟수</th>
+            {% if rent_object.rental_num == None %}
+            <td>대여한 이력이 없습니다.</td>
+            {% else %}
+            <td>{{ rent_object.rental_num }}</td>
+            {% endif %}
+        </tr>
+        {% endif %} -->
         </table>
     </div>
 </div>
