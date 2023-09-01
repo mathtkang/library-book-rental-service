@@ -22,27 +22,27 @@ class BookListView(MethodView):
         '''
         - 대여하기 버튼 클릭시 이미 빌린 도서는 마이페이지로 연동
         ✅ '자세히보기' 버튼 클릭시 /bookDetail/<int:book_id> 로 넘겨줌
+        - TODO: 대여횟수 늘어나는 부분 수정 필요!
         '''
+        book_id = request.form.get('book_id')
         user_object = User.query.filter(User.email == session.get('user_email')).first()
+
         if user_object is None:
             flash('로그인 또는 회원가입 이후 이용해주세요.')
             return redirect(url_for('auth.login'))
         
         book_list = Book.query.all()
-        book_id = request.form.get('book_id')
 
         if not book_id:
             flash('book_id는 필수 파라미터 입니다.')
             return redirect(url_for('main.book_list'))
-        
         try:
             book_id = int(book_id)
         except ValueError:
             flash('book_id는 정수여야 합니다.')
-            return redirect('main.book_list')
+            return redirect(url_for('main.book_list'))
         
         book_object = Book.query.filter(Book.id == book_id).first()
-        user_object = User.query.filter(User.email == session.get('user_email')).first()
 
         if not book_object:
             flash('대출하려는 책을 찾을 수 없습니다.')
@@ -51,12 +51,13 @@ class BookListView(MethodView):
         # 책의 재고가 0인 경우
         if book_object.remaining == 0:
             flash('재고가 없어서 대여할 수 없습니다. 다른 책을 대여해주세요.')
+            return redirect(url_for('main.book_list'))
         
         # 이미 대여한 책인 경우
         rental_info = Rent.query.filter(
             (Rent.rental_user == user_object)
-            & (Rent.rental_date != None) 
             & (Rent.book_id == book_id)
+            & (Rent.rental_date != None) 
         ).first()
         
         if rental_info:
@@ -65,16 +66,15 @@ class BookListView(MethodView):
         
         book_object.remaining -= 1  # 재고(대여 가능으로 표시되는 수): -1
 
-        now = datetime.now()
-        rental_date = now.strftime('%Y-%m-%d %H:%M:%S')
+        rental_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
         rent_object = Rent(
             rental_date=rental_date,
             rental_user=user_object,
             book_id=book_id,
-            rental_num=0,
+            rental_num=1,
         )
-        rent_object.rental_num += 1  # 총 대여 횟수: +1
+        # rent_object.rental_num += 1  # 총 대여 횟수: +1
 
         db.session.add(rent_object)
         db.session.commit()
