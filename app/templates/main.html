@@ -13,8 +13,8 @@
 {% include "_header.html" %}
 
 {% block css %}
-<link rel=" shortcut icon" href="../static/favicon/favicon-library.ico">
-<link rel="icon" href="../static/favicon/favicon-library.ico">
+<link rel=" shortcut icon" href="../media/favicon/favicon-library.ico">
+<link rel="icon" href="../media/favicon/favicon-library.ico">
 {% endblock %}
 
 {% block content %}
@@ -35,10 +35,10 @@
                         </h5>
                         <div style="margin-top:15px;">
                             {% for _ in range(book.star) %}
-                                <img width="28" src="../static/img/star_fill.png">
+                                <img width="28" src="../media/img/star_fill.png">
                             {% endfor %}
                             {% for _ in range(5 - book.star) %}
-                                <img width="28" src="../static/img/star_empty.png">
+                                <img width="28" src="../media/img/star_empty.png">
                             {% endfor %}
                         </div>
                         <div style="padding-top:10px;">

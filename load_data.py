@@ -14,7 +14,7 @@ with open('library.csv', 'r') as f:
 
     for row in reader:
         # img_link 수정
-        img_link = f"/static/img_book/{row['id']}"
+        img_link = f"/media/img_book/{row['id']}"
         try:
             open(f'{img_link}.png')
             img_link += '.png'

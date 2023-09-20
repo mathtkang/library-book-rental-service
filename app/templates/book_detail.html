@@ -11,8 +11,8 @@
 {% block title %}책 소개 페이지{% endblock %}
 
 {% block css %}
-<link rel=" shortcut icon" href="../static/favicon/favicon-library.ico">
-<link rel="icon" href="/static/favicon/favicon-library.ico">
+<link rel=" shortcut icon" href="../media/favicon/favicon-library.ico">
+<link rel="icon" href="/media/favicon/favicon-library.ico">
 {% endblock %}
 
 {% block content %}
@@ -48,10 +48,10 @@
             <th>평점</th>
             <td style="margin-top:15px;">
                 {% for _ in range(book_detail.star) %}
-                    <img width="28" src="../static/img/star_fill.png">
+                    <img width="28" src="../media/img/star_fill.png">
                 {% endfor %}
                 {% for _ in range(5 - book_detail.star) %}
-                    <img width="28" src="../static/img/star_empty.png">
+                    <img width="28" src="../media/img/star_empty.png">
                 {% endfor %}
             </td>
         </tr>
@@ -136,10 +136,10 @@
             <span class="bar">|</span>
             <span>
             {% for _ in range(review.rating) %}
-                <img width="16" src="../static/img/star_fill.png">
+                <img width="16" src="../media/img/star_fill.png">
             {% endfor %}
             {% for _ in range(5 - (review.rating)) %}
-                <img width="16" src="../static/img/star_empty.png">
+                <img width="16" src="../media/img/star_empty.png">
             {% endfor %}
             </span>
             <!-- 수정하기 삭제하기 버튼 : 작성한 유저만 사용 가능 -->

@@ -12,8 +12,8 @@
 
 {% block css %}
 <link rel="stylesheet" href="../static/css/mypage.css" />
-<link rel=" shortcut icon" href="../static/favicon/favicon-library.ico">
-<link rel="icon" href="../static/favicon/favicon-library.ico">
+<link rel=" shortcut icon" href="../media/favicon/favicon-library.ico">
+<link rel="icon" href="../media/favicon/favicon-library.ico">
 {% endblock %}
 
 {% block content %}
@@ -42,10 +42,10 @@
             </td>
             <td>
                 {% for _ in range(rental_book.book.star ) %}
-                <img width="28" src="../static/img/star_fill.png">
+                <img width="28" src="../media/img/star_fill.png">
                 {% endfor %}
                 {% for _ in range(5-rental_book.book.star ) %}
-                <img width="28" src="../static/img/star_empty.png">
+                <img width="28" src="../media/img/star_empty.png">
                 {% endfor %}
             </td>
             <td>{{ rental_book.book.remaining }}</td>
